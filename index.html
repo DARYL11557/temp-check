@@ -88,7 +88,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 <script>// ===== 計算與 Word 產生核心 =====
 function decs(s){ s=String(s==null?'':s).trim(); var i=s.indexOf('.'); return i<0?0:s.length-i-1; }
 function num(s){ if(s==null) return NaN; s=String(s).trim().replace(/[＋+]/g,'').replace(/[−－–]/g,'-'); if(s===''||s==='-') return NaN; return Number(s); }
-function fmt(v,d){ if(!isFinite(v)) return ''; var r=Number(v.toFixed(d)); if(Object.is(r,-0)) r=0; var s=r.toFixed(d); return s; }
+// 四捨五入（0.5 進位、遠離零），先放大成整數再進位，避免浮點數誤差（例如 1.005 → 1.01）
+function fmt(v,d){ if(!isFinite(v)) return ''; var p=Math.pow(10,d), a=Math.abs(v)*p, r=Math.floor(a+0.5+1e-7);
+  if(r===0) return (0).toFixed(d); return (v<0?'-':'')+(r/p).toFixed(d); }
 function fmtSigned(v,d){ var s=fmt(v,d); if(s==='') return ''; return (Number(s)>0?'+':'')+s; }
 // 一般溫度計器差值 ＝ 一般讀值 －（標準讀值 － 標準器差值）
 function calcRow(gr, sr, se){
